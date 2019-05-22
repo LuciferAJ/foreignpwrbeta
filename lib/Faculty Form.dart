@@ -221,28 +221,44 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
     });
   }
 
-  void _openFileExplorer() async {
-    if (_pickingType != FileType.ANY || _hasValidMime) {
-      try {
-        if (_multiPick) {
-          _path = null;
-          _paths = await FilePicker.getMultiFilePath(
-              type: _pickingType, fileExtension: _extension);
-        } else {
-          _paths = null;
-          _path = await FilePicker.getFilePath(
-              type: _pickingType, fileExtension: _extension);
-        }
-      } on PlatformException catch (e) {
-        print("Unsupported operation" + e.toString());
-      }
-      if (!mounted) return;
+//  void _openFileExplorer() async {
+//    if (_pickingType != FileType.ANY || _hasValidMime) {
+//      try {
+//        if (_multiPick) {
+//          _path = null;
+//          _paths = await FilePicker.getMultiFilePath(
+//              type: _pickingType, fileExtension: _extension);
+//        } else {
+//          _paths = null;
+//          _path = await FilePicker.getFilePath(
+//              type: _pickingType, fileExtension: _extension);
+//        }
+//      } on PlatformException catch (e) {
+//        print("Unsupported operation" + e.toString());
+//      }
+//      if (!mounted) return;
+//
+//      setState(() {
+//        _fileName = _path != null
+//            ? _path.split('/').last
+//            : _paths != null ? _paths.keys.toString() : '...';
+//      });
+//    }
+//  }
+  String _filePath;
 
+  void getFilePath() async {
+    try {
+      String filePath = await FilePicker.getFilePath(type: FileType.CUSTOM);
+      if (filePath == '') {
+        return;
+      }
+      print("File path: " + filePath);
       setState(() {
-        _fileName = _path != null
-            ? _path.split('/').last
-            : _paths != null ? _paths.keys.toString() : '...';
+        this._filePath = filePath;
       });
+    } on PlatformException catch (e) {
+      print("Error while picking the file: " + e.toString());
     }
   }
 
@@ -399,14 +415,7 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: RaisedButton(
-                onPressed: () => setState(() {
-                      _pickingType = FileType.ANY;
-                      _openFileExplorer();
-//                      if (_pickingType != FileType.CUSTOM) {
-////                        var _controllerfile;
-//                        _controllerfile.text = _extension = '';
-//                      }
-                    }),
+                onPressed: getFilePath,
                 child: Icon(Icons.attach_file),
               ),
             ),

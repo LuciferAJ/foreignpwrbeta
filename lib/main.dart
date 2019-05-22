@@ -22,7 +22,7 @@ class UserType extends StatelessWidget {
   }
 }
 
-//the content of first page which extends too statefulwwidget
+//the content of first page which extends too statefulwidget
 class Screen extends StatefulWidget {
   @override
   _ScreenState createState() => _ScreenState();
