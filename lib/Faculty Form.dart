@@ -1,163 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'main.dart';
 
 import 'package:flutter/services.dart';
-//import 'package:file_picker/file_picker.dart';
 
-//class FireStore extends StatelessWidget {
-////  FireStore({this.auth, this.onSignedOut});
-////  final BaseAuth auth;
-////  final VoidCallback onSignedOut;
-//
-////  void _signOut() async {
-////    try {
-////      await auth.signOut();
-////      onSignedOut();
-////    } catch (e) {
-////      print(e);
-////    }
-////  }
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return new Scaffold(
-//        appBar: new AppBar(title: new Text('Welcome'), actions: <Widget>[
-////          new FlatButton(
-////              child: new Text('Logout',
-////                  style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-////              onPressed: _signOut)
-//        ]),
-//        body: new StreamBuilder(
-//          stream: Firestore.instance.collection('books').snapshots(),
-//          builder:
-//              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-//            if (!snapshot.hasData) return CircularProgressIndicator();
-//            return new GridView.count(
-//              crossAxisCount: 2,
-//              childAspectRatio: 1.0,
-//              padding: const EdgeInsets.all(4.0),
-//              mainAxisSpacing: 4.0,
-//              crossAxisSpacing: 4.0,
-//              children:
-//                  snapshot.data.documents.map((DocumentSnapshot document) {
-//                return new ListTile(
-//                  title: new Text(document['title']),
-//                  subtitle: new Text(document['author']),
-//                );
-//              }).toList(),
-//            );
-//          },
-//        ),
-//        floatingActionButton: new FloatingActionButton(
-//            elevation: 0.0,
-//            child: new Icon(Icons.add),
-//            backgroundColor: new Color(0xFFE57373),
-//            onPressed: () {
-//              Navigator.push(
-//                context,
-//                new MaterialPageRoute(
-//                    builder: (context) => new UploadFormField()),
-//              );
-//            }));
-//  }
-//}
-//
-//// UPLOAD TO FIRESTORE
-//
-//class UploadFormField extends StatefulWidget {
-//  @override
-//  _UploadFormFieldState createState() => _UploadFormFieldState();
-//}
-//
-//class _UploadFormFieldState extends State<UploadFormField> {
-//  GlobalKey<FormState> _key = GlobalKey();
-//  bool _validate = false;
-//  String title, author;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      home: new Scaffold(
-//        appBar: new AppBar(
-//          title: new Text('Upload'),
-//        ),
-//        body: new SingleChildScrollView(
-//          child: new Container(
-//            margin: new EdgeInsets.all(15.0),
-//            child: new Form(
-//              key: _key,
-//              autovalidate: _validate,
-//              child: FormUI(),
-//            ),
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//
-//  Widget FormUI() {
-//    return new Column(
-//      children: <Widget>[
-//        new TextFormField(
-//            decoration: new InputDecoration(hintText: 'Title'),
-//            validator: validateTitle,
-//            onSaved: (String val) {
-//              title = val;
-//            }),
-//        new TextFormField(
-//            decoration: new InputDecoration(hintText: 'Author'),
-//            validator: validateAuthor,
-//            onSaved: (String val) {
-//              author = val;
-//            }),
-//        new SizedBox(height: 15.0),
-//        new RaisedButton(
-//          onPressed: _sendToServer,
-//          child: new Text('Upload'),
-//        )
-//      ],
-//    );
-//  }
-//
-//  String validateTitle(String value) {
-//    String patttern = r'(^[a-zA-Z ]*$)';
-//    RegExp regExp = new RegExp(patttern);
-//    if (value.length == 0) {
-//      return "Title is Required";
-//    } else if (!regExp.hasMatch(value)) {
-//      return "Title must be a-z and A-Z";
-//    }
-//    return null;
-//  }
-//
-//  String validateAuthor(String value) {
-//    String patttern = r'(^[a-zA-Z ]*$)';
-//    RegExp regExp = new RegExp(patttern);
-//    if (value.length == 0) {
-//      return "Author is Required";
-//    } else if (!regExp.hasMatch(value)) {
-//      return "Author must be a-z and A-Z";
-//    }
-//    return null;
-//  }
-//
-//  _sendToServer() {
-//    if (_key.currentState.validate()) {
-//      //No error in validator
-//      _key.currentState.save();
-//      Firestore.instance.runTransaction((Transaction transaction) async {
-//        CollectionReference reference = Firestore.instance.collection('books');
-//
-//        await reference.add({"Title": "$title", "Author": "$author"});
-//      });
-//    } else {
-//      // validation error
-//      setState(() {
-//        _validate = true;
-//      });
-//    }
-//  }
-//}
 class FacultyForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -199,7 +47,12 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
 
   FocusNode _focusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
-  final myController = TextEditingController();
+  final name = TextEditingController();
+  final surname = TextEditingController();
+  final address = TextEditingController();
+  final email = TextEditingController();
+  final phoneNo = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -221,30 +74,6 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
     });
   }
 
-//  void _openFileExplorer() async {
-//    if (_pickingType != FileType.ANY || _hasValidMime) {
-//      try {
-//        if (_multiPick) {
-//          _path = null;
-//          _paths = await FilePicker.getMultiFilePath(
-//              type: _pickingType, fileExtension: _extension);
-//        } else {
-//          _paths = null;
-//          _path = await FilePicker.getFilePath(
-//              type: _pickingType, fileExtension: _extension);
-//        }
-//      } on PlatformException catch (e) {
-//        print("Unsupported operation" + e.toString());
-//      }
-//      if (!mounted) return;
-//
-//      setState(() {
-//        _fileName = _path != null
-//            ? _path.split('/').last
-//            : _paths != null ? _paths.keys.toString() : '...';
-//      });
-//    }
-//  }
   String _filePath;
 
   void getFilePath() async {
@@ -262,17 +91,41 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
     }
   }
 
+  final GoogleSignIn _gSignIn = GoogleSignIn();
   @override
   void dispose() {
     // Clean up the controller when the Widget is disposed
-    myController.dispose();
+    name.dispose();
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
+  void submit() {
+    Map<String, String> data = <String, String>{
+      "name": name.text,
+      "surname": surname.text,
+      "phoneNo": phoneNo.text,
+      "address": address.text,
+      "email": email.text,
+    };
+
+    DocumentReference _documentReference = Firestore.instance
+        .collection(email.text.substring(0, email.text.indexOf("@")))
+        .document(name.text);
+    _documentReference.setData(data).whenComplete(() {
+      print("Submitted");
+    }).catchError((e) => print(e));
+  }
+//  String generateId {
+//  String id=email.toString().substring(0,email.toString().indexOf("@"));
+//  return id;
+//}
+
   @override
   Widget build(BuildContext context) {
+    final GoogleSignIn _gSignIn = GoogleSignIn();
+
     return Form(
       key: _formKey,
       child: Padding(
@@ -292,7 +145,7 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
               padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
               child: TextFormField(
                 focusNode: _focusNode,
-                controller: myController,
+                controller: name,
                 autofocus: true,
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
@@ -318,7 +171,7 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
             Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
               child: TextFormField(
-                controller: myController,
+                controller: surname,
                 autofocus: true,
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
@@ -344,7 +197,7 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
             Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
               child: TextFormField(
-                controller: myController,
+                controller: address,
                 autofocus: true,
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
@@ -370,7 +223,7 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
             Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
               child: TextFormField(
-                controller: myController,
+                controller: email,
                 autofocus: true,
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
@@ -396,7 +249,7 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
             Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
               child: TextFormField(
-                controller: myController,
+                controller: phoneNo,
                 keyboardType: TextInputType.numberWithOptions(),
                 autofocus: true,
                 style: TextStyle(color: Colors.black54),
@@ -432,11 +285,11 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
                       content: Text('Processing Data'),
                       duration: Duration(seconds: 2),
                     ));
-
+                    submit();
                     return showDialog(
                         context: context,
                         builder: (context) {
-                          return AlertDialog(content: Text(myController.text));
+                          return AlertDialog(content: Text(name.text));
                         });
                   }
                 },
@@ -449,4 +302,18 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
       ),
     );
   }
+}
+
+class FormAttributes {
+  final GoogleSignIn _gSignIn = GoogleSignIn();
+  TextEditingController name, surname, address, email, phoneNo;
+  FormAttributes(name, surname, this.address, this.email, this.phoneNo);
+  Map<String, dynamic> toJson() => {
+        'title': _gSignIn.toString(),
+        'name': name,
+        'surname': surname,
+        'address': address,
+        'email': email,
+        'phoneNo': phoneNo
+      };
 }
