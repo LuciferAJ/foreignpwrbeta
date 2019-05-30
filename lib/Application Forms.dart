@@ -48,22 +48,6 @@ class _ApplicationsState extends State<Applications> {
     });
   }
 
-  void delete() {
-    DocumentReference _documentReference =
-        Firestore.instance.collection("user").document(userDetails.uid);
-    _documentReference
-        .collection("user")
-        .document(userDetails.uid)
-        .collection("Form")
-        .document()
-        .delete()
-        .whenComplete(() {
-      print("Deleted");
-      setState(() {});
-    });
-    Navigator.pop(context);
-  }
-
   //UserInterface for Application page
   @override
   Widget build(BuildContext context) {
@@ -121,7 +105,24 @@ class _ListPageState extends State<ListPage> {
             builder: (_, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
-                  child: Text("loading"),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("Loading...",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 1.0)),
+                      )
+                    ],
+                  ),
                 );
               } else {
                 return ListView.builder(
@@ -172,10 +173,28 @@ class ApplicationDetails extends StatefulWidget {
 
   ApplicationDetails(this.application, this.userDetails);
   @override
-  _ApplicationDetailsState createState() => _ApplicationDetailsState();
+  _ApplicationDetailsState createState() =>
+      _ApplicationDetailsState(userDetails);
 }
 
 class _ApplicationDetailsState extends State<ApplicationDetails> {
+  UserDetails userDetails;
+  _ApplicationDetailsState(this.userDetails);
+  delete(String documentId) => () {
+        DocumentReference _documentReference =
+            Firestore.instance.collection("user").document(userDetails.uid);
+
+        _documentReference
+          ..collection("Form").document(documentId).delete().whenComplete(() {
+            print("Deleted");
+            setState(() {
+              Navigator.pop(context);
+            });
+          });
+
+        Navigator.pop(context);
+      };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -214,14 +233,13 @@ class _ApplicationDetailsState extends State<ApplicationDetails> {
                                 },
                                 child: Text("Cancel")),
                             new FlatButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(context);
-                                },
+                                onPressed:
+                                    delete(widget.application.documentID),
                                 child: Text("Delete")),
                           ],
                         );
                       });
-//                  Navigator.pop(context);
+//
                 })
           ],
           centerTitle: true,

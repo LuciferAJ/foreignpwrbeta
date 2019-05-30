@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
 //returning the UserInterface
     return Scaffold(
       backgroundColor: Color(0xffff983028),
-      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomPadding: false,
       body: Center(
         child: Stack(children: <Widget>[
           Center(
@@ -66,7 +66,8 @@ class _HomePageState extends State<HomePage> {
                 child: Image(
                   image: AssetImage('assets/wustlogo.png'),
                   color: Colors.white,
-                  width: MediaQuery.of(context).size.width * 0.7,
+                  width: MediaQuery.of(context).size.width * 0.8,
+//                  height: MediaQuery.of(context).size.height * 0.2,
                 ),
               )),
 //          Positioned(
