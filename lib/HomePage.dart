@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foreignpwrbeta/Applications.dart';
+import 'package:foreignpwrbeta/Application Forms.dart';
 import 'package:foreignpwrbeta/Courses.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'Contact Details.dart';
@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   _HomePageState(this.detailsUser);
   @override
   Widget build(BuildContext context) {
+    final String userId = detailsUser.providerDetails;
     final GoogleSignIn _gSignIn = GoogleSignIn();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -68,19 +69,19 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width * 0.7,
                 ),
               )),
-          Positioned(
-            top: 20,
-            right: 0,
-            child: IconButton(
-              padding: const EdgeInsets.all(20.0),
-//            alignment: Alignment.bottomRight,
-              icon: Icon(
-                Icons.edit,
-                color: Colors.white,
-              ),
-              onPressed: () {},
-            ),
-          ),
+//          Positioned(
+//            top: 20,
+//            right: 0,
+//            child: IconButton(
+//              padding: const EdgeInsets.all(20.0),
+////            alignment: Alignment.bottomRight,
+//              icon: Icon(
+//                Icons.edit,
+//                color: Colors.white,
+//              ),
+//              onPressed: () {},
+//            ),
+//          ),
           Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -111,13 +112,16 @@ class _HomePageState extends State<HomePage> {
                           children: <Widget>[
                             Expanded(
                                 flex: 1,
-                                child: _button(context, Courses("Courses"),
+                                child: _button(
+                                    context,
+                                    Courses("Courses", detailsUser),
                                     Icons.library_books)),
                             Expanded(
                                 flex: 1,
                                 child: _button(
                                     context,
-                                    Applications("Applications"),
+                                    Applications(
+                                        "Application Forms", detailsUser),
                                     Icons.description)),
                           ],
                         ),

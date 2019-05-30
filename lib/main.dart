@@ -14,9 +14,6 @@ class UserType extends StatelessWidget {
     return MaterialApp(
       home: Screen(),
       debugShowCheckedModeBanner: false,
-//        routes: <String, WidgetBuilder>{
-//          "/HomePage": (BuildContext context) => new HomePage(),
-//        }
     );
   }
 }
@@ -50,26 +47,22 @@ class _ScreenState extends State<Screen> {
     );
 
     FirebaseUser userDetails = await _auth.signInWithCredential(credential);
+
     ProviderDetails providerInfo = new ProviderDetails(userDetails.providerId);
     List<ProviderDetails> providerData = new List<ProviderDetails>();
     providerData.add(providerInfo);
     UserDetails details = new UserDetails(userDetails.photoUrl, providerData,
-        userDetails.providerId, userDetails.email, userDetails.displayName);
+        userDetails.providerId, userDetails.email, userDetails.displayName,userDetails.uid);
     Navigator.push(context,
         new MaterialPageRoute(builder: (context) => new HomePage(details)));
     return userDetails;
-
-//    final FirebaseUser user = await _auth.signInWithGoogle(
-//        idToken: googleSignInAuthentication.idToken,
-//        accessToken: googleSignInAuthentication.accessToken);
-//    return user;
   }
 
 //will login
   Future<bool> login() async {
     // Simulate a future for response after 2 second.
     return await new Future<bool>.delayed(
-        new Duration(seconds: 2), () => new Random().nextBool());
+        new Duration(seconds: 1), () => new Random().nextBool());
   }
 
   @override
@@ -137,9 +130,10 @@ class UserDetails {
   final String userName;
   final String photoUrl;
   final String userEmail;
+  final String uid;
   final List<ProviderDetails> providerData;
   UserDetails(this.photoUrl, this.providerData, this.providerDetails,
-      this.userEmail, this.userName);
+      this.userEmail, this.userName,this.uid);
 }
 
 //Providing the providers details

@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'Avail_courses.dart';
 import 'Faculty Form.dart';
+import 'main.dart';
 
 //Page to provide details about faculty
 class CourseDetails extends StatefulWidget {
   AvailFieldBach availFieldBach;
-  CourseDetails({this.availFieldBach});
+  UserDetails userDetails;
+  CourseDetails({this.availFieldBach, this.userDetails});
   @override
-  _CourseDetailsState createState() => _CourseDetailsState(availFieldBach);
+  _CourseDetailsState createState() =>
+      _CourseDetailsState(availFieldBach, userDetails);
 }
 
 //Defining the state of the page
 class _CourseDetailsState extends State<CourseDetails> {
   AvailFieldBach availFieldBach;
-  _CourseDetailsState(this.availFieldBach);
+  UserDetails userDetails;
+  _CourseDetailsState(this.availFieldBach, this.userDetails);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +37,7 @@ class _CourseDetailsState extends State<CourseDetails> {
         ),
         new Align(
           alignment: Alignment.bottomCenter,
-          child: readButton(context),
+          child: readButton(context, userDetails,availFieldBach),
         ),
       ]),
     );
@@ -135,14 +139,14 @@ bottomContent(context, AvailFieldBach availFieldBach) => Container(
     );
 
 //Defining the Floating button to apply for that courses
-readButton(BuildContext context) => Padding(
+readButton(BuildContext context, UserDetails userDetails,AvailFieldBach availfieldbach) => Padding(
     padding: EdgeInsets.symmetric(vertical: 16.0),
     child: RaisedButton(
       onPressed: () => {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FacultyForm(),
+                  builder: (context) => FacultyForm(userDetails,availfieldbach),
                 ))
           },
       color: Color(0xffff983028),

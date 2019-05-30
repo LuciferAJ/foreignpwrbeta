@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:foreignpwrbeta/FieldofStudy.dart';
 import 'package:line_icons/line_icons.dart';
 import 'Avail_courses.dart';
+import 'main.dart';
 
 //Courses Page which imports object from HomePage
 class Courses extends StatefulWidget {
   String AppbarTitle;
-
+  UserDetails userDetails;
   //Constructors
-  Courses(this.AppbarTitle);
+  Courses(this.AppbarTitle, this.userDetails);
   @override
-  _CoursesState createState() => _CoursesState(AppbarTitle);
+  _CoursesState createState() => _CoursesState(AppbarTitle, userDetails);
 }
 
 //State of Courses Page
 class _CoursesState extends State<Courses> {
   //Store the all Courses in List View Object
   List courses;
+  UserDetails userDetails;
 
   @override
   void initState() {
@@ -25,7 +27,7 @@ class _CoursesState extends State<Courses> {
   }
 
   String AppbarTitle;
-  _CoursesState(this.AppbarTitle);
+  _CoursesState(this.AppbarTitle, this.userDetails);
 //UserInterface for Courses Page
   @override
   Widget build(BuildContext context) {
@@ -49,12 +51,12 @@ class _CoursesState extends State<Courses> {
             style: TextStyle(color: Colors.black87),
           ),
         ),
-        body: CourseType(courses, context));
+        body: CourseType(courses, context, userDetails));
   }
 }
 
 // Defining how the courses object are displayed on the page
-CourseType(courses, context) => Container(
+CourseType(courses, context, UserDetails userDetails) => Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
       ),
@@ -63,13 +65,13 @@ CourseType(courses, context) => Container(
         shrinkWrap: true,
         itemCount: courses.length,
         itemBuilder: (BuildContext context, int index) {
-          return makeCard(courses[index], context);
+          return makeCard(courses[index], context, userDetails);
         },
       ),
     );
 
 //Making the Cards inside the container to present each course
-Card makeCard(AvailCourses courses, context) => Card(
+Card makeCard(AvailCourses courses, context, UserDetails userDetails) => Card(
       elevation: 8.0,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(15.0))),
@@ -78,12 +80,12 @@ Card makeCard(AvailCourses courses, context) => Card(
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(15.0))),
-        child: makeListTile(courses, context),
+        child: makeListTile(courses, context, userDetails),
       ),
     );
 
 //This will Present that in List View
-ListTile makeListTile(courses, context) => ListTile(
+ListTile makeListTile(courses, context, UserDetails userDetails) => ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       leading: Container(
         padding: EdgeInsets.only(right: 12.0),
@@ -119,9 +121,8 @@ ListTile makeListTile(courses, context) => ListTile(
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => FieldofStudy(
-                      courses: courses,
-                    )));
+                builder: (context) =>
+                    FieldofStudy(courses: courses, userDetails: userDetails)));
       },
     );
 

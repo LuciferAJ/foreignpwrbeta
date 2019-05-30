@@ -3,17 +3,29 @@ import 'package:file_picker/file_picker.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'main.dart';
-
+import 'Avail_courses.dart';
 import 'package:flutter/services.dart';
 
 class FacultyForm extends StatelessWidget {
+  UserDetails userDetails;
+  AvailFieldBach availFieldBach;
+  FacultyForm(this.userDetails, this.availFieldBach);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back_ios),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black87,
+            size: 20,
+          ),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+        ),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -22,18 +34,24 @@ class FacultyForm extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: SingleChildScrollView(child: FacultyFormBody()),
+      body: SingleChildScrollView(
+          child: FacultyFormBody(userDetails, availFieldBach)),
     );
   }
 }
 
 class FacultyFormBody extends StatefulWidget {
+  UserDetails userDetails;
+  AvailFieldBach availFieldBach;
+  FacultyFormBody(this.userDetails, this.availFieldBach);
   @override
-  _FacultyFormBodyState createState() => _FacultyFormBodyState();
+  _FacultyFormBodyState createState() => _FacultyFormBodyState(userDetails);
 }
 
 class _FacultyFormBodyState extends State<FacultyFormBody>
     with SingleTickerProviderStateMixin {
+  UserDetails userDetails;
+  _FacultyFormBodyState(this.userDetails);
   AnimationController _controller;
   Animation<double> _animation;
   String _fileName;
@@ -91,7 +109,6 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
     }
   }
 
-  final GoogleSignIn _gSignIn = GoogleSignIn();
   @override
   void dispose() {
     // Clean up the controller when the Widget is disposed
@@ -108,14 +125,15 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
       "phoneNo": phoneNo.text,
       "address": address.text,
       "email": email.text,
+      "faculty": widget.availFieldBach.courseTitle
     };
 
-    DocumentReference _documentReference = Firestore.instance
-        .collection(email.text.substring(0, email.text.indexOf("@")))
-        .document(name.text);
-    _documentReference.setData(data).whenComplete(() {
-      print("Submitted");
-    }).catchError((e) => print(e));
+    DocumentReference _documentReference =
+        Firestore.instance.collection("user").document(userDetails.uid);
+    _documentReference
+      ..collection("Form").document().setData(data).whenComplete(() {
+        print("Submitted");
+      }).catchError((e) => print(e));
   }
 //  String generateId {
 //  String id=email.toString().substring(0,email.toString().indexOf("@"));
@@ -283,13 +301,32 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
                     // If the form is valid, we want to show a Snackbar
                     Scaffold.of(context).showSnackBar(SnackBar(
                       content: Text('Processing Data'),
-                      duration: Duration(seconds: 2),
+                      duration: Duration(milliseconds: 300),
                     ));
                     submit();
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('Submitted'),
+                      duration: Duration(seconds: 1),
+                    ));
+                    Future.delayed(Duration(seconds: 2));
+                    Navigator.pop(context);
                     return showDialog(
                         context: context,
                         builder: (context) {
-                          return AlertDialog(content: Text(name.text));
+                          return AlertDialog(
+                            title: Text(
+                              "Info",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            content: Text("Form Submitted"),
+                            actions: <Widget>[
+                              new FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(context);
+                                  },
+                                  child: Text("Ok"))
+                            ],
+                          );
                         });
                   }
                 },
@@ -302,18 +339,4 @@ class _FacultyFormBodyState extends State<FacultyFormBody>
       ),
     );
   }
-}
-
-class FormAttributes {
-  final GoogleSignIn _gSignIn = GoogleSignIn();
-  TextEditingController name, surname, address, email, phoneNo;
-  FormAttributes(name, surname, this.address, this.email, this.phoneNo);
-  Map<String, dynamic> toJson() => {
-        'title': _gSignIn.toString(),
-        'name': name,
-        'surname': surname,
-        'address': address,
-        'email': email,
-        'phoneNo': phoneNo
-      };
 }

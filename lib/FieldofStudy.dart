@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:foreignpwrbeta/CourseDetails.dart';
 import 'Avail_courses.dart';
+import 'main.dart';
 
 //FieldofStudy Page
 //Will display all the available faculty of the courses
 class FieldofStudy extends StatefulWidget {
   AvailCourses courses;
-  FieldofStudy({this.courses});
+  UserDetails userDetails;
+  FieldofStudy({this.courses, this.userDetails});
 
   @override
-  _FieldofStudyState createState() => _FieldofStudyState(courses);
+  _FieldofStudyState createState() => _FieldofStudyState(courses, userDetails);
 }
 
 //state of the Page
 class _FieldofStudyState extends State<FieldofStudy> {
   //Storing all the faculty in a List
+  UserDetails userDetails;
   List fields;
   AvailCourses courses;
-  _FieldofStudyState(this.courses);
+  _FieldofStudyState(this.courses, this.userDetails);
   @override
 
   //Initialising all the page with the faculty available
@@ -49,31 +52,32 @@ class _FieldofStudyState extends State<FieldofStudy> {
         ),
       ),
       backgroundColor: Color(0xffff983028),
-      body: makeBody(context, fields),
+      body: makeBody(context, fields, userDetails),
     );
   }
 }
 
 //Storing all the Faculty in an container
-makeBody(context, fields) => Container(
+makeBody(context, fields, userDetails) => Container(
 //  color: Colors.black26,
       child: ListView.builder(
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
         itemCount: fields.length,
         itemBuilder: (BuildContext context, int index) {
-          return makeCard(context, fields[index]);
+          return makeCard(context, fields[index], userDetails);
         },
       ),
     );
 //Displaying all the faculties  as card view
-makeCard(context, AvailFieldBach fields) => new GestureDetector(
+makeCard(context, AvailFieldBach fields, userDetails) => new GestureDetector(
     onTap: () {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => CourseDetails(
                     availFieldBach: fields,
+                    userDetails: userDetails,
                   )));
     },
     child: Card(
