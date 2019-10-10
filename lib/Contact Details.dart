@@ -166,7 +166,7 @@ class Contact extends StatelessWidget {
                           "+48 71 320 2905",
                           textAlign: TextAlign.left,
                           style:
-                              TextStyle(color: Colors.black54, fontSize: 15.0),
+                              TextStyle(color: Colors.black54, fontSize: 18.0),
                         ),
                       ),
                     ),
